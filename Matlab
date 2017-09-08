@@ -1,0 +1,172 @@
+问题一（太阳影子长度随时角变化曲线）：
+N=295;     %N为积日
+N0=79.6764+0.2422*(2015-1985)-floor((2015-1985)/4);
+t=N-N0;    %t为日角
+a=2*pi*t/365.2422;
+ED=0.3723+23.2567*sin(a)+0.1149*sin(2*a)-0.1712*sin(3*a)-0.758*cos(a)+0.3656*cos(2*a)+0.0201*cos(3*a);
+fai=39.9072;                                    %当地纬度，化为弧度制
+th=9:0.1:15;
+thh=th+(4*(116.39-120)-15)/60;
+tt=15*(thh-12);                                 %计算时角      
+f=sin(fai*pi/180)*sin(ED*pi/180)+cos(fai*pi/180)*cos(ED*pi/180)*cos(tt*pi/180); %太阳高度角的正弦值
+h=asin(f);
+s=3./tan(h);   %求出影长
+figure
+plot(th,s)                                      %画出影长随时间变化的图像
+title('太阳影子长度的变化曲线')
+xlabel('时')
+ylabel('米')
+
+问题二（拟合二次函数代码）：
+clear,clc
+x=[14.7 14.75 14.8 14.85 14.9 14.95 15.00 15.05 15.10 15.15 15.20 15.25 15.30 15.35 15.40 15.45 15.50 15.55 15.60 15.65 15.70];
+y=[1.149625826 1.182198976 1.215296955 1.249051052 1.28319534 1.317993149 1.353364049 1.389387091 1.426152856 1.463399853 1.501481622 1.540231817 1.579853316 1.620144515 1.661270613 1.703290633 1.74620591 1.790050915 1.835014272 1.880875001 1.927918447];
+[xs,s]=polyfit(x,y,2);
+a=xs(1)
+b=xs(2)
+c=xs(3)
+y2=polyval(xs,x)
+plot(x,y,'r*',x,y2,'-b')
+d=-b/(2*a)
+q=12;
+w=24.1275+0.1489*q*q-3.7519*q
+Cftool
+问题2模型求解代码：
+clear,clc
+n=31+28+31+18;
+a=23.45*sin(2*pi*(284+n)/365);
+t=2*15+42/4;
+f=@(x)([tan(x(1))-x(2)/((x(2)*(1.03/1.14)*sqrt(1+0.49*0.49/1.03/1.03)));sin(x(1))-(x(2)/sqrt(x(2)*x(2)+1.14*1.14));sin(x(1))-(sin(x(3))*sin(a)+cos(x(3))*cos(a)*cos(t))]);
+for i=1:5
+    for j=20:60
+        for k=10:50
+            x=fsolve(f,[j,i,k]);
+            if(x(2)>0)
+                x
+            else
+                return   
+           end
+        end
+    end
+end
+
+问题三（拟合二次函数代码：附件2）：
+clear,clc,
+x=[12.683 12.733 12.783 12.833 12.883 12.933 12.983 13.033 13.083 13.133 13.183 13.233 13.283 13.333 13.383 13.433 13.483 13.533 13.583 13.633 13.683];
+y=[1.247256205 1.22279459 1.198921486 1.175428964 1.152439573 1.12991747 1.10783548 1.086254206 1.065081072 1.044446265 1.024264126 1.004640314 0.985490908 0.966790494 0.948584735 0.930927881 0.91375175 0.897109051 0.880973762 0.865492259 0.850504468];
+[xs,s]=polyfit(x,y,2);
+a=xs(1)
+b=xs(2)
+c=xs(3)
+y2=polyval(xs,x)
+plot(x,y,'r*',x,y2,'-b')
+D=-b/(2*a)
+E=120-(D-12)*15
+Cftool
+
+问题三模型求解：
+clear,clc,
+y=3.3007;
+d=1.575;
+A=atan(y/d);
+t=13.5;
+tt=(t-12)*15*pi/180;
+b=41.74;%所计算地区的纬度
+f=@(x)([sin(A)*cos(asin(sin(b)*sin(x)+cos(x)*cos(b)*cos(t)))-sin(x)*cos(b)+cos(x)*sin(b)*cos(tt)]);
+for i=1:365
+x=fsolve(f,20);
+x
+end 
+
+问题三（拟合二次函数代码：附件3）：
+x=[13.15 13.2 13.25 13.3 13.35 13.4 13.45 13.5 13.55 13.6 13.65 13.7 13.75 13.8 13.85 13.9 13.95 14 14.05 14.1 14.15];
+y=[3.533142184 3.546768029 3.561797643 3.578100715 3.595750783 3.61493428 3.635425983 3.657218272 3.680541115 3.705167836 3.731278025 3.758917911 3.788087888 3.818701015 3.850809619 3.88458522 3.919911828 3.956875992 3.99553479 4.035750835 4.077863059];
+[xs,S]=polyfit(x,y,2);
+a=xs(1)
+b=xs(2)
+c=xs(3)
+y2=polyval(xs,x)
+plot(x,y,'r*',x,y2,'-b')
+D=-b/(2*a)
+E=120-(D-12)*15
+Cftool
+
+
+问题四（视频处理）：
+clc;
+clear;
+video=VideoReader('F:\vedio.avi');
+nFrames = video.NumberOfFrames;  %得到帧数
+H = video.Height;                %得到高度
+W = video.Width;                  %得到宽度
+Rate = video.FrameRate;
+% Preallocate movie structure.
+mov(1:nFrames) = struct('cdata',zeros(H,W,3,'uint8'),'colormap',[]);
+
+
+%获取每一帧
+for i = 1:4500:nFrames
+    mov(i).cdata = read(video,i);
+    P = mov(i).cdata;
+
+    %imresize() []中格式要求：[高 宽]
+
+    Q = imresize(P,[720 960]);
+    disp('当前播帧数：'),disp(i);
+    imshow(P),title('原始图片');%显示原始图片
+    
+    if i<10
+    imwrite(Q,strcat('0000',int2str(i),'.jpg'),'jpg');%写入文件中
+    else if i>=10 & i<100
+    imwrite(Q,strcat('000',int2str(i),'.jpg'),'jpg');
+    else 
+    imwrite(Q,strcat('00',int2str(i),'.jpg'),'jpg');
+        end
+    end
+end
+
+问题四（图像处理）：
+close all;  
+clear all;  
+Io= imread('31.jpg');
+I=imcrop(Io,[420 130 380 500]);
+I=rgb2gray(I);
+figure;  
+subplot(1,3,1);  
+imshow(I);  
+BW = edge(I,'canny');%Canny方法提取图像边界，返回二值图像(边界1,否则0)  
+[H,T,R] = hough(BW);%计算二值图像的标准霍夫变换，H为霍夫变换矩阵，I,R为计算霍夫变换的角度和半径值  
+subplot(1,3,2);  
+imshow(H,[],'XData',T,'YData',R,'InitialMagnification','fit');%hough变换的图像  
+xlabel('\theta'), ylabel('\rho');  
+axis on,axis square,hold on;  
+P  = houghpeaks(H,8);%提取3个极值点  
+x = T(P(:,2));   
+y = R(P(:,1));  
+plot(x,y,'s','color','white');%标出极值点  
+lines=houghlines(BW,T,R,P);%提取线段  
+subplot(1,3,3);  
+imshow(I), hold on;  
+for k = 1:length(lines)  
+xy = [lines(k).point1; lines(k).point2];  
+ plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');%画出线段  
+plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');%起点  
+plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');%终点  
+end  
+
+问题四（视频影长拟合二次函数代码）：
+clear,
+clc,
+x=[8.95 8.96667 8.9833 9.0 9.01667 9.0333 9.05 9.35 9.366667 9.4 9.6];
+y=[3.5725 3.5488 3.525 3.5015 3.4669 3.4547 3.4314 3.0322 3.01 2.9687 2.7268];
+[xs,s]=polyfit(x,y,2);
+a=xs(1)
+b=xs(2)
+c=xs(3)
+y2=polyval(xs,x)
+plot(x,y,'r*',x,y2,'-b')
+D=-b/(2*a)
+E=120-(D-12)*15
+g=12
+F=a*g*g+b*g+c
+cftool
